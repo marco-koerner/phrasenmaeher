@@ -1,15 +1,21 @@
 ---
 name: phrasenmaeher
-description: Prüft, ob ein deutscher Text glatt wirkt, nach KI oder nach Phrase, und zeigt die Stellen, die den Eindruck auslösen (Floskeln, Wendungen, Schlussfragen als Köder, Gedankenstriche, Apostrophe, Vorsätze mit Doppelpunkt, Dreier-Stakkato, Hook-Zeile, gleichförmiger Rhythmus). Nutze diesen Skill, wenn jemand fragt, ob ein Text „nach KI klingt“, „KI-ig“ oder „glatt“ wirkt, floskelhaft ist oder vor dem Absenden geprüft werden soll, bei eigenen wie fremden Texten (etwa LinkedIn-Posts). Liefert Indizien mit Fundstelle und eine Einschätzung, kein Urteil über die Herkunft, und schreibt nichts um.
+description: Prüft, ob ein deutscher Text glatt wirkt, nach KI oder nach Phrase, in drei Teilen. Ein Skript zählt Floskeln, Wendungen, Muster, Satzformen (Doppelpunkt-Aufzählung, Schlagwortsatz ohne Verb, Definitionssatz, Pointe am Absatzende) und Kennzahlen; ein Leser mit leerem Kontext stellt jedem Satz fünf Fragen (Aussage, Beleg, Nutzen für die Leserin, Neues, Austauschbarkeit); der Mäher schlägt eine Fassung vor, in der nur die markierten Stellen geändert sind. Nutze diesen Skill, wenn jemand fragt, ob ein Text „nach KI klingt“, „KI-ig“ oder „glatt“ wirkt, floskelhaft ist oder vor dem Absenden geprüft werden soll, bei eigenen wie fremden Texten (etwa LinkedIn-Posts). Das Ergebnis sagt nichts über die Herkunft.
 ---
 
 # Phrasenmäher
 
-Prüft die Oberfläche eines Textes auf Merkmale, die Leserinnen und Leser an KI denken lassen. Zwei Teile: ein Skript zählt, was sich zählen lässt; danach liest Claude, was sich nur lesend finden lässt. Ergebnis sind Fundstellen und eine Einschätzung. **Kein Urteil über die Herkunft, keine Umformulierung.** Jedes Merkmal kommt auch in menschlichen Texten vor, der Gedankenstrich ist korrekte Typografie; es zählt die Häufung, und ob eine Stelle stehen bleibt, entscheidet die Autorin oder der Autor.
+Prüft einen Text auf das, was Leserinnen und Leser an KI oder an Phrasen denken lässt. Drei Teile, in dieser Reihenfolge:
+
+- **Zähler**: ein Skript, deterministisch. Es findet Wörter, Wendungen, Muster und Satzformen. Es findet keine Aussagen.
+- **Leser**: jemand, der den Text nicht geschrieben hat, mit leerem Kontext. Er bekommt nur den Text und die fünf Fragen aus dem Skill `leser` (Datei `auftrag.md` dort) und urteilt je Satz. Er findet, was kein Skript findet: Behauptungen ohne Beleg, Sätze, die niemanden angehen, Wiederholungen, Austauschbares.
+- **Mäher**: schlägt eine Fassung vor, in der ausschließlich die Stellen geändert sind, die Zähler oder Leser markiert haben.
+
+Der Zähler allein reicht nicht. Das hat sich am 15.10.2026 am Text der Demonstrationsseite gezeigt: ohne eine einzige Fundstelle durch das Skript und trotzdem glatt, weil der Verfasser die Liste kannte und um sie herum schrieb. Wer den Satz geschrieben hat, hat auch die Rechtfertigung dafür im Kopf; deshalb liest ein anderer. Jedes Merkmal kommt auch in menschlichen Texten vor, der Gedankenstrich ist korrekte Typografie; ob eine Stelle stehen bleibt, entscheidet die Autorin oder der Autor. In der Redaktion ist die gemähte Fassung der Text, der zur Freigabe geht.
 
 ## Merkmalsliste
 
-Die Liste der Floskeln, Wendungen und Muster liegt als `merkmale.md` im Repo `marco-koerner/phrasenmaeher` und wird in Projekten als **Projektwissen über GitHub** eingebunden. Sie wächst mit jedem Fund; das Skript hat nur eine eingebaute Kurzfassung.
+Die Liste der Floskeln, Wendungen und Muster liegt als `merkmale.md` im Repo `marco-koerner/phrasenmaeher` und wird in Projekten als **Projektwissen über GitHub** eingebunden. Sie wächst mit jedem Fund; das Skript hat nur eine eingebaute Kurzfassung, die Satzformen stecken im Skript selbst.
 
 - Liegt `merkmale.md` im Projektwissen (oder wurde sie in den Chat gegeben): Inhalt unverändert als Datei `merkmale.md` ablegen und dem Skript mit `--merkmale` übergeben.
 - Liegt sie nicht vor: Skript ohne `--merkmale` laufen lassen und in der Ausgabe sagen, dass nur die eingebaute Kurzliste galt.
@@ -17,21 +23,36 @@ Die Liste der Floskeln, Wendungen und Muster liegt als `merkmale.md` im Repo `ma
 ## Ablauf
 
 1. **Text als Datei ablegen** (.txt, .md oder .docx). Eingefügten Text unverändert speichern, Absätze erhalten; die Zeilennummern der Ausgabe beziehen sich auf diese Datei.
-2. **Skript:** `python3 scripts/phrasenmaeher.py TEXT --merkmale merkmale.md` (`--kurz` ohne Zitatkontext). Es liefert Fundstellen mit Zeile und Kategorie, Kennzahlen (Satzlängen, Gedankenstriche je 1000 Wörter, Einsatz-Absätze) und eine Verdachtsdichte in drei Stufen.
-3. **Lesen.** Was das Skript nicht sieht, der Abschnitt „Was nur das Lesen findet“ in `merkmale.md`: Behauptungen ohne Beleg oder Erlebnis, nichts Konkretes (Name, Zahl, Ort, Datum), jeder Absatz mit Pointe, Begriffe ohne Verwendung, keine Reibung, Übergänge, die immer aufgehen, austauschbare Aufzählungen, tragende Metaphern ohne Inhalt. Jede Beobachtung mit Zitat oder Zeile belegen; keine Beobachtung ohne Stelle.
-4. **Ausgabe** in dieser Form:
-   - **Fundstellen** als Liste: Zeile, Merkmal, kurzes Zitat. Skriptfunde und Lesefunde getrennt.
-   - **Kennzahlen** aus dem Skript.
-   - **Einschätzung** in einem Absatz: Wie stark ist der Gesamteindruck (gering, mittel, hoch), woran liegt es vor allem, und was davon ist bei diesem Text legitim. Bei einem eigenen Text zusätzlich: welche Stellen Verdacht auslösen, obwohl sie sachlich oder typografisch richtig sind, damit die Autorin oder der Autor bewusst entscheidet.
+2. **Zähler:** `python3 scripts/phrasenmaeher.py TEXT --merkmale merkmale.md` (`--kurz` ohne Zitatkontext). Er liefert Fundstellen mit Zeile und Kategorie (Floskel, Wendung, Muster, Satzbau, Typografie, Absatzbau, Rhythmus), Kennzahlen (Satzlängen, Gedankenstriche je 1000 Wörter, Einsatz-Absätze, Flesch-Index) und eine Verdachtsdichte in drei Stufen.
+3. **Leser.** Den Skill `leser` anwenden; er ist ein eigener Skill mit demselben Auftrag (`auftrag.md`) und regelt, wie der leere Kontext zustande kommt:
+   - Steht ein Werkzeug für einen eigenen Agenten zur Verfügung (in Claude Code das Agent-Werkzeug, Typ general-purpose): einen Agenten starten, dessen Prompt nur aus dem Abschnitt unter dem Trennstrich in `auftrag.md` und dem Text besteht. Keine Merkmalsliste, keine Textproben, keine Vorgeschichte, kein Hinweis auf Verfasser oder Zweck. Das Ergebnis unverändert übernehmen.
+   - Gibt es kein solches Werkzeug (etwa im Chat) und der Text ist in diesem Gespräch entstanden: sagen, dass der Leser im selben Kontext milder urteilt, die Alternative nennen (neuer Chat ohne Projekt mit dem Skill `leser`) und auf Wunsch die fünf Fragen hier Satz für Satz schriftlich beantworten, bevor irgendetwas anderes geschieht.
+   - Fehlt der Skill `leser`, den Auftrag aus dem Repo holen (`skills/leser/auftrag.md`, öffentlich) und das in der Ausgabe sagen.
+   - Jede Beobachtung des Lesers trägt den zitierten Satz. Sätze mit „fällt durch“ gelten als markiert; Sätze mit „schwach“ werden in der Einschätzung genannt und bleiben Entscheidung der Autorin oder des Autors.
+4. **Mähen.** Eine gemähte Fassung des ganzen Textes erstellen, nach diesen Regeln:
+   - Nur markierte Stellen ändern (Zähler und Leser). Jeder nicht markierte Satz bleibt wortgleich, auch wenn er sich besser formulieren ließe.
+   - Streichen vor Ersetzen. Eine Floskel fällt meist ersatzlos weg; ein Vorsatz mit Doppelpunkt wird gestrichen, die Pointe bleibt; eine Schlussfrage als Köder fällt weg; ein Satz, der laut Leser niemanden angeht oder einen Satz davor wiederholt, fällt weg. Ist Ersatz nötig, dann konkret statt allgemein (eine Zahl, ein Name, ein Beispiel aus dem Text selbst), nie eine andere Formel.
+   - Eine Behauptung ohne Beleg bekommt keinen erfundenen Beleg. Entweder der Beleg steht im Material, dann wird er genannt, oder der Satz wird zur Frage an die Autorin oder den Autor.
+   - Markierungen, die sachlich oder typografisch berechtigt sind (ein Gedankenstrich, der inhaltlich trägt, ein Zitat mit geraden Anführungszeichen in Code, eine Aufzählung, die wirklich eine Aufzählung ist), stehen lassen und in der Änderungsliste als „bewusst belassen“ führen.
+   - Die gemähte Fassung erneut durch den Zähler laufen lassen. Bleiben neue Funde, einmal nachbessern; danach aufhören, damit nicht eine Formel die nächste ersetzt. Der Leser läuft nicht ein zweites Mal; was er gefunden hat, ist entweder behoben oder als offene Frage ausgewiesen.
+   - Stimme und Inhalt sind nicht Gegenstand des Mähens. Fehlt dem Text nach dem Mähen ein Gedanke, das in der Einschätzung sagen, nicht einen erfinden.
+5. **Ausgabe** in dieser Form:
+   - **Fundstellen** als Liste: Zeile, Merkmal, kurzes Zitat. Zählerfunde und Leserfunde getrennt; beim Leser je Satz das Urteil und die Frage, die durchfiel.
+   - **Kennzahlen** aus dem Zähler, vor und nach dem Mähen (Wörter, Gedankenstriche je 1000 Wörter, Verdachtsdichte).
+   - **Einschätzung** in einem Absatz: Wie stark ist der Gesamteindruck (gering, mittel, hoch), woran liegt es vor allem, und was davon ist bei diesem Text legitim. Die drei belastendsten Sätze des Lesers und seine offenen Fragen gehören hierher. Bei einem eigenen Text zusätzlich: welche Stellen Verdacht auslösen, obwohl sie sachlich oder typografisch richtig sind, damit die Autorin oder der Autor bewusst entscheidet.
+   - **Gemähte Fassung** als Ganzes, danach die **Änderungsliste**: je Fundstelle vorher → nachher, „bewusst belassen“ mit Grund oder „offene Frage“ mit dem, was fehlt.
    - Bei Texten unter 150 Wörtern sagen, dass einzelne Funde mehr zählen als die Stufe.
-5. **Nicht tun:** keinen Text umschreiben oder „entschärfen“, keine Formulierungsvorschläge, kein Satz wie „dieser Text wurde von KI geschrieben“. Wer eine Umformulierung will, bekommt sie in einem eigenen Schritt und auf ausdrückliche Bitte.
+6. **Nicht tun:** keine Änderungen außerhalb der Markierungen, keine Verbesserung von Stimme oder Argument, keine erfundenen Belege, kein Satz wie „dieser Text wurde von KI geschrieben“. Wer nur die Markierungen will, sagt es; dann entfällt Schritt 4. Bei fremden Texten (etwa ein LinkedIn-Post, den jemand prüfen lässt) entfällt das Mähen ebenfalls, es sei denn, es wird ausdrücklich gewünscht; der Leser läuft trotzdem.
 
 ## Grenzen
 
 - Ein Mensch kann jedes Merkmal treffen, eine KI kann jedes vermeiden. Die Prüfung zeigt Anmutung, nicht Herkunft.
-- Formale Dokumente mit Überschriften, Listen und Angaben wie „Stand:“ erzeugen Treffer beim Vorsatz-Muster; das Skript filtert die häufigsten Fälle, nicht alle.
-- Die Dichte-Stufen sind grob kalibriert (gering unter 2, mittel bis 6, hoch darüber, gewichtete Indizien je 100 Wörter) und werden mit der Nutzung nachjustiert.
+- Wer die Merkmalsliste kennt, schreibt um sie herum. Der Zähler misst dann nichts mehr; der Leser ist in diesem Fall die eigentliche Prüfung.
+- Der Leser im selben Kontext ist milder als ein fremder. Wo es auf die Prüfung ankommt (Redaktion, Veröffentlichung), läuft er als eigener Agent.
+- Formale Dokumente mit Überschriften, Listen und Angaben wie „Stand:“ erzeugen Treffer beim Vorsatz-Muster und bei der Doppelpunkt-Aufzählung; das Skript filtert die häufigsten Fälle, nicht alle.
+- Die gemähte Fassung ist eine sprachliche Bereinigung, kein neuer Text. Wo Regeln einer Auftraggeberin den KI-Einsatz einschränken, gilt sie als Korrektur und wird wie jede KI-Hilfe dokumentiert.
+- Die Dichte-Stufen sind grob kalibriert (gering unter 2, mittel bis 6, hoch darüber, gewichtete Indizien je 100 Wörter) und werden mit der Nutzung nachjustiert. Stand 15.10.2026: ein erfundener LinkedIn-Post im KI-Stil 17,8 (hoch), ein Leitlinienpapier 0,5 (gering), Schreibproben eines Menschen 0,4 (gering), der erste Seitentext der Demonstration 3,5 (mittel, nur Satzformen).
 
 ## Neue Merkmale
 
-Fällt beim Prüfen ein Merkmal auf, das in `merkmale.md` fehlt, am Ende als Vorschlag formulieren (Eintrag für den passenden Abschnitt, mit Datum und kurzem Beleg). Es kommt per Pull Request ins Repo; nach dem Merge reicht im Projekt „Jetzt synchronisieren“. Den Skill selbst muss Marco nur neu hochladen, wenn sich dieser Ablauf oder das Skript ändern.
+Fällt beim Prüfen ein Merkmal auf, das in `merkmale.md` fehlt, am Ende als Vorschlag formulieren (Eintrag für den passenden Abschnitt, mit Datum und kurzem Beleg). Es kommt per Pull Request ins Repo; nach dem Merge reicht im Projekt „Jetzt synchronisieren“. Den Skill selbst muss Marco nur neu hochladen, wenn sich dieser Ablauf oder das Skript ändern; den Skill `leser`, wenn sich der Auftrag ändert.

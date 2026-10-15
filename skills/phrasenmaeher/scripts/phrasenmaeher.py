@@ -3,9 +3,15 @@
 
   python3 phrasenmaeher.py TEXT.txt|TEXT.md|TEXT.docx [--merkmale merkmale.md] [--kurz]
 
-Liest den Text, sucht Floskeln, Wendungen und Muster aus der Merkmalsliste und
-berechnet Kennzahlen (Gedankenstriche, Apostrophe, Satzrhythmus, Absatzbau).
+Liest den Text, sucht Floskeln, Wendungen und Muster aus der Merkmalsliste,
+prüft Satzformen (Doppelpunkt-Aufzählung, Dreierreihe, Schlagwortsatz ohne Verb,
+Definitionssatz, Pointe am Absatzende) und berechnet Kennzahlen (Gedankenstriche,
+Apostrophe, Satzrhythmus, Absatzbau, Flesch-Index).
 Ausgabe: Fundstellen mit Zeile, dann Kennzahlen, dann eine Verdachtsdichte.
+
+Das Skript findet Formen, keine Aussagen. Ob ein Satz etwas behauptet, das
+niemand belegt, oder etwas sagt, das niemanden interessiert, findet nur, wer
+liest (Skill leser, skills/leser/auftrag.md).
 
 Das Skript urteilt nicht. Jedes Merkmal kommt auch in menschlichen Texten vor;
 es zeigt, was den Verdacht auslöst, damit man bewusst entscheidet.
@@ -73,9 +79,106 @@ def lies_text(pfad):
     return open(pfad, encoding="utf-8").read()
 
 
+def silben(wort):
+    """Grobe Silbenzählung für Deutsch: Vokalgruppen, Diphthonge als eine Silbe."""
+    w = re.sub(r"[^a-zäöüß]", "", wort.lower())
+    if not w:
+        return 0
+    return max(len(re.findall(r"[aeiouäöüy]+", w)), 1)
+
+
+def flesch_amstad(woerter, n_saetze):
+    """Flesch-Reading-Ease nach Amstad (deutsche Formel): 180 - ASL - 58,5 * ASW."""
+    w = [x for x in woerter if re.search(r"[A-Za-zÄÖÜäöüß]", x)]
+    if not w or not n_saetze:
+        return None
+    asl = len(w) / n_saetze
+    asw = sum(silben(x) for x in w) / len(w)
+    return 180 - asl - 58.5 * asw
+
+
+SATZGRENZE = r"(?<=[.!?])\s+(?=[A-ZÄÖÜ„»(\d])"
+
+
 def saetze(text):
-    roh = re.split(r"(?<=[.!?])\s+(?=[A-ZÄÖÜ„»(\d])", re.sub(r"\s+", " ", text).strip())
+    roh = re.split(SATZGRENZE, re.sub(r"\s+", " ", text).strip())
     return [s for s in roh if len(s.split()) >= 2]
+
+
+def satz_spannen(zeile):
+    """Sätze einer Zeile mit Position: Liste aus (start, ende, satz), nur Sätze mit mindestens zwei Wörtern."""
+    spannen, start = [], 0
+    for m in re.finditer(SATZGRENZE, zeile):
+        spannen.append((start, m.start()))
+        start = m.end()
+    spannen.append((start, len(zeile)))
+    return [(a, b, zeile[a:b]) for a, b in spannen if len(zeile[a:b].split()) >= 2]
+
+
+def ist_reihung(teil):
+    """Wahr, wenn ein Satzteil aus mindestens drei kurzen, durch Komma getrennten Gliedern besteht."""
+    teil = re.sub(r"[.!?;]+\s*$", "", teil.strip())
+    glieder = [g.strip() for g in re.split(r",\s*", teil) if g.strip()]
+    if glieder:
+        letzte = re.split(r"\s(?:und|oder|sowie)\s", glieder[-1], maxsplit=1)
+        glieder = glieder[:-1] + [g.strip() for g in letzte if g.strip()]
+    if len(glieder) < 3:
+        return False
+    kurz = sum(len(g.split()) <= 4 for g in glieder)
+    return kurz / len(glieder) >= 0.75
+
+
+# Satzbau: Formen, die ein Sprachmodell auch dann trifft, wenn es die Wortliste kennt
+LISTE = re.compile(r"^\s*(?:[-•*–]|\d+[.)])\s")
+LABEL = re.compile(r"^(?:Stand|Quelle|Hinweis|Beispiel|Foto|Autor|Autorin|Kontakt|Datum|Titel|Tel|Telefon|E-Mail|Mail|Web|Adresse|Betreff|Thema|Name)\b")
+SCHLAGWORT_START = re.compile(r"^[„»(]?(?:Kein|Keine|Keinen|Nur|Ohne|Alles|Nichts|Mehr|Weniger|Statt|Endlich|Einfach)\b")
+VERB = re.compile(r"\b(?:ist|sind|war|waren|hat|haben|hatte|hatten|wird|werden|wurde|wurden|gibt|geht|kommt|bleibt|kann|können|muss|müssen|soll|sollen|will|wollen|darf|dürfen|mag|lässt|macht|zählt|fehlt|steht|liegt|braucht|hilft|reicht|genügt|gilt|heißt|bedeutet|zeigt|folgt|passt|stimmt|funktioniert|dazu|hier|unten|oben|später|siehe)\b", re.I)
+DEFINITION = re.compile(r"^[„»(]?([A-ZÄÖÜ][\w-]+)\s(ist|sind)\s(?:der|die|das|ein|eine|kein|keine|nicht|oft|immer|nie|meist|selten|mehr|weniger)\b")
+KEINE_DEFINITION = {"es", "er", "sie", "das", "dies", "dieser", "diese", "dieses", "wer", "was", "hier", "dort", "so", "dann", "damit", "dabei", "darum", "deshalb", "ziel", "zweck", "voraussetzung", "grundlage", "ergebnis", "gegenstand", "ausnahme", "beispiel", "folge", "anlass", "stand", "quelle", "thema", "termin", "ort", "zeit", "kontakt", "veranstalter", "herausgeber", "ansprechpartner", "ansprechpartnerin", "maßgeblich", "wichtig", "entscheidend", "neu", "offen", "unklar", "klar"}
+AUFTAKT = re.compile(r"(?:^|[,;:]\s*)([^\W\d_]{2,})\s[^,;:.!?]*,\s*\1\s[^,;:.!?]*,\s*\1\s", re.I)
+
+
+def satzbau(zeilen):
+    """Liefert Funde (zeile, kategorie, fund, kontext, start, ende) zu Satzformen."""
+    funde = []
+    for i, z in enumerate(zeilen, 1):
+        if LISTE.match(z) or z.lstrip().startswith("#"):
+            continue
+        for a, b, s in satz_spannen(z):
+            n = len(s.split())
+            m = re.match(r"^(.{0,80}?):\s+(\S.*)$", s)
+            if m and len(m.group(1).split()) <= 12 and not LABEL.match(m.group(1).strip()) and ist_reihung(m.group(2)):
+                funde.append((i, "Satzbau", "Doppelpunkt-Aufzählung (Reihung statt Satz)", s, a + len(m.group(1)), b))
+            t = AUFTAKT.search(s)
+            if t:
+                funde.append((i, "Satzbau", f"Dreierreihe mit gleichem Auftakt („{t.group(1)} …, {t.group(1).lower()} …, {t.group(1).lower()} …“)", s, a + t.start(1), b))
+            if 2 <= n <= 6 and SCHLAGWORT_START.match(s) and not VERB.search(s):
+                funde.append((i, "Satzbau", "Schlagwortsatz ohne Verb", s, a, b))
+            d = DEFINITION.match(s)
+            if d and d.group(1).lower() not in KEINE_DEFINITION:
+                funde.append((i, "Satzbau", f"Definitionssatz („{d.group(1)} {d.group(2)} …“), Beleg?", s, a, b))
+    return funde
+
+
+def pointen(text, zeilen):
+    """Kurzer Schlusssatz eines Absatzes nach einem langen Satz; Fund auf der letzten Zeile des Absatzes."""
+    funde = []
+    zeilennr = 0
+    for absatz in re.split(r"(\n\s*\n)", text):
+        n_zeilen = absatz.count("\n")
+        if not absatz.strip() or LISTE.match(absatz) or absatz.lstrip().startswith("#"):
+            zeilennr += n_zeilen
+            continue
+        letzte_zeile = zeilennr + absatz.rstrip("\n").count("\n") + 1
+        alle = saetze(absatz)
+        if len(alle) >= 2 and len(alle[-1].split()) <= 6 and alle[-1].rstrip().endswith((".", "!")) \
+                and any(len(s.split()) >= 12 for s in alle[:-1]):
+            z = zeilen[letzte_zeile - 1]
+            spannen = satz_spannen(z)
+            a, b = (spannen[-1][0], spannen[-1][1]) if spannen else (0, len(z))
+            funde.append((letzte_zeile, "Satzbau", "Pointe am Absatzende (kurzer Schlusssatz nach langem)", alle[-1], a, b))
+        zeilennr += n_zeilen
+    return funde
 
 
 def main():
@@ -111,7 +214,6 @@ def main():
                 funde.append((i, "Muster", erkl, z.strip()))
 
     # Vorsatz mit Doppelpunkt: kurze Zeile oder kurzer Satzanfang vor dem Doppelpunkt, keine Beschriftung einer Liste
-    LISTE = re.compile(r"^\s*(?:[-•*–]|\d+[.)])\s")
     for i, z in enumerate(zeilen, 1):
         t = z.strip()
         m = re.match(r"^((?:\S+\s){0,3}\S+):(\s*$|\s+\S)", t)
@@ -120,9 +222,16 @@ def main():
         folgende = next((zeilen[j] for j in range(i, len(zeilen)) if zeilen[j].strip()), "")
         if m.group(2).strip() == "" and (LISTE.match(folgende) or not folgende):
             continue  # Beschriftung vor einer Liste, kein Vorsatz
-        if re.match(r"^(?:Stand|Quelle|Hinweis|Beispiel|Foto|Autor|Autorin|Kontakt|Datum|Titel|Tel|Telefon|E-Mail|Mail|Web|Adresse|Betreff|Thema|Name)\b", m.group(1)):
+        if LABEL.match(m.group(1)):
             continue
+        erster_satz = satz_spannen(t)[0][2] if satz_spannen(t) else t
+        if ist_reihung(erster_satz[len(m.group(1)) + 1:]):
+            continue  # zählt als Doppelpunkt-Aufzählung (Satzbau)
         funde.append((i, "Muster", "Vorsatz mit Doppelpunkt (streichbar?)", t))
+
+    # Satzbau
+    for zeile, kat, fund, kontext, _, _ in satzbau(zeilen) + pointen(text, zeilen):
+        funde.append((zeile, kat, fund, kontext))
 
     # Typografie
     for i, z in enumerate(zeilen, 1):
@@ -194,6 +303,11 @@ def main():
         print(f"  Satzlänge Ø {statistics.mean(laengen):.1f} Wörter, kürzester {min(laengen)}, längster {max(laengen)}"
               + (f", Streuung/Mittel {cv:.2f}" if cv is not None else ""))
     print(f"  Gedankenstriche {striche} ({striche_je_1000:.1f} je 1000 Wörter)")
+    fre = flesch_amstad(woerter, len(alle))
+    if fre is not None:
+        stufe_fre = ("sehr schwer" if fre < 30 else "schwer" if fre < 50 else "mittel" if fre < 60 else
+                     "leicht" if fre < 70 else "sehr leicht")
+        print(f"  Flesch-Index (Amstad) {fre:.0f}, {stufe_fre}; misst Lesbarkeit, nicht Glätte, fließt nicht in die Dichte ein")
     print(f"  Einsatz-Absätze {len(ein_satz)} von {len(absaetze)}")
     gewichtet = sum(0.5 if f[1] == "Typografie" else 1 for f in funde)
     dichte = gewichtet * 100 / n_w
@@ -201,7 +315,7 @@ def main():
     print(f"\nVerdachtsdichte: {stufe} ({gewichtet:g} gewichtete Indizien je {n_w} Wörter = {dichte:.1f} je 100 Wörter)")
     if n_w < 150:
         print("Kurzer Text: Die Dichte schwankt stark, einzelne Funde zählen mehr als die Stufe.")
-    print("Kein Urteil über die Herkunft. Jedes Merkmal kommt auch in menschlichen Texten vor; entscheide je Fundstelle, ob sie stehen bleibt.")
+    print("Das Ergebnis sagt nichts über die Herkunft. Jedes Merkmal kommt auch in menschlichen Texten vor; entscheide je Fundstelle, ob sie stehen bleibt.")
 
 
 if __name__ == "__main__":
