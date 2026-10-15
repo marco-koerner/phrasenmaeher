@@ -117,6 +117,7 @@ Diese Merkmale stecken im Skript selbst, weil sie Rechnen statt Wortsuche brauch
 - Anapher: drei Sätze nacheinander mit demselben ersten Wort
 - gleichmäßiger Rhythmus: Satzlängen streuen kaum (Streuung geteilt durch Mittelwert unter 0,35)
 - Schlussfrage: letzter Absatz endet mit einer Frage an die Leserschaft
+- Flesch-Index nach Amstad (180 − mittlere Satzlänge − 58,5 × mittlere Silbenzahl je Wort): misst Lesbarkeit, nicht Glätte, und fließt nicht in die Dichte ein. Nützlich als Gegenprobe: KI-Texte sind oft sehr lesbar und trotzdem leer
 
 ## Was nur das Lesen findet
 

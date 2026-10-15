@@ -73,6 +73,24 @@ def lies_text(pfad):
     return open(pfad, encoding="utf-8").read()
 
 
+def silben(wort):
+    """Grobe Silbenzählung für Deutsch: Vokalgruppen, Diphthonge als eine Silbe."""
+    w = re.sub(r"[^a-zäöüß]", "", wort.lower())
+    if not w:
+        return 0
+    return max(len(re.findall(r"[aeiouäöüy]+", w)), 1)
+
+
+def flesch_amstad(woerter, n_saetze):
+    """Flesch-Reading-Ease nach Amstad (deutsche Formel): 180 - ASL - 58,5 * ASW."""
+    w = [x for x in woerter if re.search(r"[A-Za-zÄÖÜäöüß]", x)]
+    if not w or not n_saetze:
+        return None
+    asl = len(w) / n_saetze
+    asw = sum(silben(x) for x in w) / len(w)
+    return 180 - asl - 58.5 * asw
+
+
 def saetze(text):
     roh = re.split(r"(?<=[.!?])\s+(?=[A-ZÄÖÜ„»(\d])", re.sub(r"\s+", " ", text).strip())
     return [s for s in roh if len(s.split()) >= 2]
@@ -194,6 +212,11 @@ def main():
         print(f"  Satzlänge Ø {statistics.mean(laengen):.1f} Wörter, kürzester {min(laengen)}, längster {max(laengen)}"
               + (f", Streuung/Mittel {cv:.2f}" if cv is not None else ""))
     print(f"  Gedankenstriche {striche} ({striche_je_1000:.1f} je 1000 Wörter)")
+    fre = flesch_amstad(woerter, len(alle))
+    if fre is not None:
+        stufe_fre = ("sehr schwer" if fre < 30 else "schwer" if fre < 50 else "mittel" if fre < 60 else
+                     "leicht" if fre < 70 else "sehr leicht")
+        print(f"  Flesch-Index (Amstad) {fre:.0f}, {stufe_fre}; misst Lesbarkeit, nicht Glätte, fließt nicht in die Dichte ein")
     print(f"  Einsatz-Absätze {len(ein_satz)} von {len(absaetze)}")
     gewichtet = sum(0.5 if f[1] == "Typografie" else 1 for f in funde)
     dichte = gewichtet * 100 / n_w
