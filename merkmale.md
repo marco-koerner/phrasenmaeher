@@ -4,7 +4,7 @@ Stand: 15.10.2026, erste Fassung. Grundlage: eigene Beobachtung, „Inside HKomm
 
 Glätte ist der Eindruck, dass ein Text aus Formeln besteht statt aus Gedanken. Viele Leserinnen und Leser halten ihn dann für KI-geschrieben; genauso gut ist es PR-Sprech, Beratersprache oder LinkedIn-Routine von Menschen. Die Liste unterscheidet das nicht, sie findet die Formeln. Kein Merkmal beweist etwas, der Gedankenstrich ist korrekte deutsche Typografie. Es zählt die Häufung. Diese Datei beschreibt, was den **Verdacht** auslöst, damit man es findet und bewusst entscheidet, ob es stehen bleibt.
 
-Das Skript `glaette_check.py` liest diese Datei: Einträge unter „Floskeln“ und „Wendungen“ sucht es wörtlich (Groß- und Kleinschreibung egal, nur ganze Wörter), Einträge unter „Muster“ als regulären Ausdruck in Backticks. Alles nach „ – “ hinter einem Eintrag ist Erläuterung und wird nicht gesucht.
+Das Skript `phrasenmaeher.py` liest diese Datei: Einträge unter „Floskeln“ und „Wendungen“ sucht es wörtlich (Groß- und Kleinschreibung egal, nur ganze Wörter), Einträge unter „Muster“ als regulären Ausdruck in Backticks. Alles nach „ – “ hinter einem Eintrag ist Erläuterung und wird nicht gesucht.
 
 ## Floskeln
 

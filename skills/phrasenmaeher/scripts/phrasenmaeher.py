@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Zählt Merkmale, die einen Text glatt wirken lassen (KI-Anmutung, Phrasensprache).
 
-  python3 glaette_check.py TEXT.txt|TEXT.md|TEXT.docx [--merkmale merkmale.md] [--kurz]
+  python3 phrasenmaeher.py TEXT.txt|TEXT.md|TEXT.docx [--merkmale merkmale.md] [--kurz]
 
 Liest den Text, sucht Floskeln, Wendungen und Muster aus der Merkmalsliste und
 berechnet Kennzahlen (Gedankenstriche, Apostrophe, Satzrhythmus, Absatzbau).
@@ -11,7 +11,7 @@ Das Skript urteilt nicht. Jedes Merkmal kommt auch in menschlichen Texten vor;
 es zeigt, was den Verdacht auslöst, damit man bewusst entscheidet.
 
 Ohne --merkmale gilt eine eingebaute Kurzliste. Die Datei merkmale.md aus dem
-Repo marco-koerner/glaette-check ist aktueller; wenn sie vorliegt, übergeben.
+Repo marco-koerner/phrasenmaeher ist aktueller; wenn sie vorliegt, übergeben.
 Nur Standardbibliothek.
 """
 

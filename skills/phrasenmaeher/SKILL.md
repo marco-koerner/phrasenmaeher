@@ -1,15 +1,15 @@
 ---
-name: glaette-check
+name: phrasenmaeher
 description: Prüft, ob ein deutscher Text glatt wirkt, nach KI oder nach Phrase, und zeigt die Stellen, die den Eindruck auslösen (Floskeln, Wendungen, Schlussfragen als Köder, Gedankenstriche, Apostrophe, Vorsätze mit Doppelpunkt, Dreier-Stakkato, Hook-Zeile, gleichförmiger Rhythmus). Nutze diesen Skill, wenn jemand fragt, ob ein Text „nach KI klingt“, „KI-ig“ oder „glatt“ wirkt, floskelhaft ist oder vor dem Absenden geprüft werden soll, bei eigenen wie fremden Texten (etwa LinkedIn-Posts). Liefert Indizien mit Fundstelle und eine Einschätzung, kein Urteil über die Herkunft, und schreibt nichts um.
 ---
 
-# Glättecheck
+# Phrasenmäher
 
 Prüft die Oberfläche eines Textes auf Merkmale, die Leserinnen und Leser an KI denken lassen. Zwei Teile: ein Skript zählt, was sich zählen lässt; danach liest Claude, was sich nur lesend finden lässt. Ergebnis sind Fundstellen und eine Einschätzung. **Kein Urteil über die Herkunft, keine Umformulierung.** Jedes Merkmal kommt auch in menschlichen Texten vor, der Gedankenstrich ist korrekte Typografie; es zählt die Häufung, und ob eine Stelle stehen bleibt, entscheidet die Autorin oder der Autor.
 
 ## Merkmalsliste
 
-Die Liste der Floskeln, Wendungen und Muster liegt als `merkmale.md` im Repo `marco-koerner/glaette-check` und wird in Projekten als **Projektwissen über GitHub** eingebunden. Sie wächst mit jedem Fund; das Skript hat nur eine eingebaute Kurzfassung.
+Die Liste der Floskeln, Wendungen und Muster liegt als `merkmale.md` im Repo `marco-koerner/phrasenmaeher` und wird in Projekten als **Projektwissen über GitHub** eingebunden. Sie wächst mit jedem Fund; das Skript hat nur eine eingebaute Kurzfassung.
 
 - Liegt `merkmale.md` im Projektwissen (oder wurde sie in den Chat gegeben): Inhalt unverändert als Datei `merkmale.md` ablegen und dem Skript mit `--merkmale` übergeben.
 - Liegt sie nicht vor: Skript ohne `--merkmale` laufen lassen und in der Ausgabe sagen, dass nur die eingebaute Kurzliste galt.
@@ -17,7 +17,7 @@ Die Liste der Floskeln, Wendungen und Muster liegt als `merkmale.md` im Repo `ma
 ## Ablauf
 
 1. **Text als Datei ablegen** (.txt, .md oder .docx). Eingefügten Text unverändert speichern, Absätze erhalten; die Zeilennummern der Ausgabe beziehen sich auf diese Datei.
-2. **Skript:** `python3 scripts/glaette_check.py TEXT --merkmale merkmale.md` (`--kurz` ohne Zitatkontext). Es liefert Fundstellen mit Zeile und Kategorie, Kennzahlen (Satzlängen, Gedankenstriche je 1000 Wörter, Einsatz-Absätze) und eine Verdachtsdichte in drei Stufen.
+2. **Skript:** `python3 scripts/phrasenmaeher.py TEXT --merkmale merkmale.md` (`--kurz` ohne Zitatkontext). Es liefert Fundstellen mit Zeile und Kategorie, Kennzahlen (Satzlängen, Gedankenstriche je 1000 Wörter, Einsatz-Absätze) und eine Verdachtsdichte in drei Stufen.
 3. **Lesen.** Was das Skript nicht sieht, der Abschnitt „Was nur das Lesen findet“ in `merkmale.md`: Behauptungen ohne Beleg oder Erlebnis, nichts Konkretes (Name, Zahl, Ort, Datum), jeder Absatz mit Pointe, Begriffe ohne Verwendung, keine Reibung, Übergänge, die immer aufgehen, austauschbare Aufzählungen, tragende Metaphern ohne Inhalt. Jede Beobachtung mit Zitat oder Zeile belegen; keine Beobachtung ohne Stelle.
 4. **Ausgabe** in dieser Form:
    - **Fundstellen** als Liste: Zeile, Merkmal, kurzes Zitat. Skriptfunde und Lesefunde getrennt.
