@@ -1,14 +1,14 @@
-# Merkmale, die einen Text nach KI aussehen lassen
+# Merkmale, die einen Text glatt wirken lassen
 
 Stand: 15.10.2026, erste Fassung. Grundlage: eigene Beobachtung, „Inside HKomm“ Folge 19 (Jörg Heeren, Universität Bielefeld, zu Floskeln wie „innovativ“ und „bahnbrechend“ und zum geraden Apostroph), die Leitplanken aus Marcos Redaktion (keine Hook-Zeilen, keine Dreierlisten mit Pointe, keine Vorsätze mit Doppelpunkt).
 
-Kein Merkmal beweist etwas. Jedes kommt auch in von Menschen geschriebenen Texten vor; der Gedankenstrich ist korrekte deutsche Typografie. Es zählt die Häufung. Diese Datei beschreibt, was den **Verdacht** auslöst, damit man es findet und bewusst entscheidet, ob es stehen bleibt.
+Glätte ist der Eindruck, dass ein Text aus Formeln besteht statt aus Gedanken. Viele Leserinnen und Leser halten ihn dann für KI-geschrieben; genauso gut ist es PR-Sprech, Beratersprache oder LinkedIn-Routine von Menschen. Die Liste unterscheidet das nicht, sie findet die Formeln. Kein Merkmal beweist etwas, der Gedankenstrich ist korrekte deutsche Typografie. Es zählt die Häufung. Diese Datei beschreibt, was den **Verdacht** auslöst, damit man es findet und bewusst entscheidet, ob es stehen bleibt.
 
-Das Skript `ki_check.py` liest diese Datei: Einträge unter „Floskeln“ und „Wendungen“ sucht es wörtlich (Groß- und Kleinschreibung egal, nur ganze Wörter), Einträge unter „Muster“ als regulären Ausdruck in Backticks. Alles nach „ – “ hinter einem Eintrag ist Erläuterung und wird nicht gesucht.
+Das Skript `glaette_check.py` liest diese Datei: Einträge unter „Floskeln“ und „Wendungen“ sucht es wörtlich (Groß- und Kleinschreibung egal, nur ganze Wörter), Einträge unter „Muster“ als regulären Ausdruck in Backticks. Alles nach „ – “ hinter einem Eintrag ist Erläuterung und wird nicht gesucht.
 
 ## Floskeln
 
-Wörter, die KI-Texte überdurchschnittlich oft verwenden. Einzeln harmlos, gehäuft verdächtig.
+Wörter, die KI-Texte und Phrasendrescherei überdurchschnittlich oft verwenden. Einzeln harmlos, gehäuft verdächtig.
 
 - innovativ
 - bahnbrechend
@@ -76,7 +76,12 @@ Feste Formeln, die Struktur vortäuschen oder den Leser an die Hand nehmen.
 - ich bin begeistert
 - ich bin stolz
 - was denkt ihr
+- was meint ihr – Schlussfrage als Köder, 15.10.2026, fiel in Redaktionsentwürfen auf
 - wie seht ihr das
+- wie handhabt ihr das
+- wie sind eure Erfahrungen
+- eure Erfahrungen
+- lasst es mich wissen
 - teilt es gern
 - gerne teilen
 - Spoiler:
