@@ -11,14 +11,15 @@ Anlass: „Inside HKomm“, Folge 19 (14.05.2026), Jörg Heeren (Referent für W
 | Pfad | Inhalt |
 |---|---|
 | `merkmale.md` | die wachsende Merkmalsliste: Floskeln, Wendungen, Muster, Kennzahlen, Satzformen, Lesemerkmale; wird in Claude-Projekten als Projektwissen eingebunden |
-| `skills/phrasenmaeher/` | Quelle des Skills in claude.ai: Ablauf (`SKILL.md`), Auftrag an den Leser (`leser.md`) und Zählskript (`scripts/phrasenmaeher.py`) |
+| `skills/phrasenmaeher/` | Quelle des Skills `phrasenmaeher` in claude.ai: Ablauf Zähler, Leser, Mäher (`SKILL.md`) und Zählskript (`scripts/phrasenmaeher.py`) |
+| `skills/leser/` | Quelle des Skills `leser`: Kontextregel (`SKILL.md`) und der Auftrag mit den fünf Fragen (`auftrag.md`), einzige Quelle des Auftrags |
 
 ## Nutzen
 
-- **Skill:** Ordner `skills/phrasenmaeher/` als ZIP hochladen (der Ordner ist die Wurzel des ZIPs). Neu hochladen nur, wenn sich Ablauf, Leserauftrag oder Skript ändern.
+- **Skills:** `skills/phrasenmaeher/` und `skills/leser/` je als ZIP hochladen (der Ordner ist die Wurzel des ZIPs); beide gelten in allen Chats und Projekten. Neu hochladen nur, wenn sich Ablauf, Skript oder Auftrag ändern.
 - **Merkmalsliste:** in jedem Projekt, in dem geprüft werden soll, unter Wissen „+“ → GitHub → dieses Repo → `merkmale.md`. Nach jedem Merge dort „Jetzt synchronisieren“.
 - **Skript allein:** `python3 skills/phrasenmaeher/scripts/phrasenmaeher.py TEXT.txt --merkmale merkmale.md`
-- **Leser allein:** den Abschnitt unter dem Trennstrich in `skills/phrasenmaeher/leser.md` mit dem Text an ein Sprachmodell geben, das sonst nichts über den Text weiß.
+- **Leser allein:** Skill `leser` in einem neuen Chat ohne Projekt mit dem Text aufrufen; das ist der leere Kontext. Ohne Skill: den Abschnitt unter dem Trennstrich in `skills/leser/auftrag.md` mit dem Text an ein Sprachmodell geben, das sonst nichts über den Text weiß.
 - **Browser:** eine Fassung des Zählers läuft auf [marcokoerner.com/phrasenmaeher](https://marcokoerner.com/phrasenmaeher/); der Text verlässt den Browser nicht. Der Leser läuft dort nicht.
 
 ## Was hier nicht liegt

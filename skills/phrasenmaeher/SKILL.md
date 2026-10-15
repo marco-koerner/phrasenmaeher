@@ -8,7 +8,7 @@ description: Prüft, ob ein deutscher Text glatt wirkt, nach KI oder nach Phrase
 Prüft einen Text auf das, was Leserinnen und Leser an KI oder an Phrasen denken lässt. Drei Teile, in dieser Reihenfolge:
 
 - **Zähler**: ein Skript, deterministisch. Es findet Wörter, Wendungen, Muster und Satzformen. Es findet keine Aussagen.
-- **Leser**: jemand, der den Text nicht geschrieben hat, mit leerem Kontext. Er bekommt nur den Text und die fünf Fragen in `leser.md` und urteilt je Satz. Er findet, was kein Skript findet: Behauptungen ohne Beleg, Sätze, die niemanden angehen, Wiederholungen, Austauschbares.
+- **Leser**: jemand, der den Text nicht geschrieben hat, mit leerem Kontext. Er bekommt nur den Text und die fünf Fragen aus dem Skill `leser` (Datei `auftrag.md` dort) und urteilt je Satz. Er findet, was kein Skript findet: Behauptungen ohne Beleg, Sätze, die niemanden angehen, Wiederholungen, Austauschbares.
 - **Mäher**: schlägt eine Fassung vor, in der ausschließlich die Stellen geändert sind, die Zähler oder Leser markiert haben.
 
 Der Zähler allein reicht nicht. Das hat sich am 15.10.2026 am Text der Demonstrationsseite gezeigt: ohne eine einzige Fundstelle durch das Skript und trotzdem glatt, weil der Verfasser die Liste kannte und um sie herum schrieb. Wer den Satz geschrieben hat, hat auch die Rechtfertigung dafür im Kopf; deshalb liest ein anderer. Jedes Merkmal kommt auch in menschlichen Texten vor, der Gedankenstrich ist korrekte Typografie; ob eine Stelle stehen bleibt, entscheidet die Autorin oder der Autor. In der Redaktion ist die gemähte Fassung der Text, der zur Freigabe geht.
@@ -24,9 +24,10 @@ Die Liste der Floskeln, Wendungen und Muster liegt als `merkmale.md` im Repo `ma
 
 1. **Text als Datei ablegen** (.txt, .md oder .docx). Eingefügten Text unverändert speichern, Absätze erhalten; die Zeilennummern der Ausgabe beziehen sich auf diese Datei.
 2. **Zähler:** `python3 scripts/phrasenmaeher.py TEXT --merkmale merkmale.md` (`--kurz` ohne Zitatkontext). Er liefert Fundstellen mit Zeile und Kategorie (Floskel, Wendung, Muster, Satzbau, Typografie, Absatzbau, Rhythmus), Kennzahlen (Satzlängen, Gedankenstriche je 1000 Wörter, Einsatz-Absätze, Flesch-Index) und eine Verdachtsdichte in drei Stufen.
-3. **Leser.** Den Text mit dem Auftrag aus `leser.md` an jemanden geben, der ihn nicht geschrieben hat:
-   - Steht ein Werkzeug für einen eigenen Agenten zur Verfügung (in Claude Code das Agent-Werkzeug, Typ general-purpose): einen Agenten starten, dessen Prompt nur aus dem Abschnitt unter dem Trennstrich in `leser.md` und dem Text besteht. Keine Merkmalsliste, keine Textproben, keine Vorgeschichte, kein Hinweis auf Verfasser oder Zweck. Das Ergebnis unverändert übernehmen.
-   - Gibt es kein solches Werkzeug (etwa im Chat): die fünf Fragen selbst Satz für Satz schriftlich beantworten, bevor irgendetwas anderes geschieht, und in der Ausgabe sagen, dass der Leser im selben Kontext lief und deshalb milder urteilt als ein fremder.
+3. **Leser.** Den Skill `leser` anwenden; er ist ein eigener Skill mit demselben Auftrag (`auftrag.md`) und regelt, wie der leere Kontext zustande kommt:
+   - Steht ein Werkzeug für einen eigenen Agenten zur Verfügung (in Claude Code das Agent-Werkzeug, Typ general-purpose): einen Agenten starten, dessen Prompt nur aus dem Abschnitt unter dem Trennstrich in `auftrag.md` und dem Text besteht. Keine Merkmalsliste, keine Textproben, keine Vorgeschichte, kein Hinweis auf Verfasser oder Zweck. Das Ergebnis unverändert übernehmen.
+   - Gibt es kein solches Werkzeug (etwa im Chat) und der Text ist in diesem Gespräch entstanden: sagen, dass der Leser im selben Kontext milder urteilt, die Alternative nennen (neuer Chat ohne Projekt mit dem Skill `leser`) und auf Wunsch die fünf Fragen hier Satz für Satz schriftlich beantworten, bevor irgendetwas anderes geschieht.
+   - Fehlt der Skill `leser`, den Auftrag aus dem Repo holen (`skills/leser/auftrag.md`, öffentlich) und das in der Ausgabe sagen.
    - Jede Beobachtung des Lesers trägt den zitierten Satz. Sätze mit „fällt durch“ gelten als markiert; Sätze mit „schwach“ werden in der Einschätzung genannt und bleiben Entscheidung der Autorin oder des Autors.
 4. **Mähen.** Eine gemähte Fassung des ganzen Textes erstellen, nach diesen Regeln:
    - Nur markierte Stellen ändern (Zähler und Leser). Jeder nicht markierte Satz bleibt wortgleich, auch wenn er sich besser formulieren ließe.
@@ -54,4 +55,4 @@ Die Liste der Floskeln, Wendungen und Muster liegt als `merkmale.md` im Repo `ma
 
 ## Neue Merkmale
 
-Fällt beim Prüfen ein Merkmal auf, das in `merkmale.md` fehlt, am Ende als Vorschlag formulieren (Eintrag für den passenden Abschnitt, mit Datum und kurzem Beleg). Es kommt per Pull Request ins Repo; nach dem Merge reicht im Projekt „Jetzt synchronisieren“. Den Skill selbst muss Marco nur neu hochladen, wenn sich dieser Ablauf, `leser.md` oder das Skript ändern.
+Fällt beim Prüfen ein Merkmal auf, das in `merkmale.md` fehlt, am Ende als Vorschlag formulieren (Eintrag für den passenden Abschnitt, mit Datum und kurzem Beleg). Es kommt per Pull Request ins Repo; nach dem Merge reicht im Projekt „Jetzt synchronisieren“. Den Skill selbst muss Marco nur neu hochladen, wenn sich dieser Ablauf oder das Skript ändern; den Skill `leser`, wenn sich der Auftrag ändert.

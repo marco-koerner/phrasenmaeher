@@ -11,7 +11,7 @@ Ausgabe: Fundstellen mit Zeile, dann Kennzahlen, dann eine Verdachtsdichte.
 
 Das Skript findet Formen, keine Aussagen. Ob ein Satz etwas behauptet, das
 niemand belegt, oder etwas sagt, das niemanden interessiert, findet nur, wer
-liest (siehe leser.md im Skill).
+liest (Skill leser, skills/leser/auftrag.md).
 
 Das Skript urteilt nicht. Jedes Merkmal kommt auch in menschlichen Texten vor;
 es zeigt, was den Verdacht auslöst, damit man bewusst entscheidet.

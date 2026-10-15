@@ -1,6 +1,6 @@
-# Leser
+# Auftrag an den Leser
 
-Dieser Text ist der vollständige Auftrag an den Leser. Er bekommt ihn zusammen mit dem zu prüfenden Text und sonst nichts, also weder die Merkmalsliste noch Textproben, Vorgeschichte oder einen Hinweis darauf, wer den Text geschrieben hat und wozu. Wo ein eigener Agent mit leerem Kontext möglich ist, läuft der Leser dort. Wo nicht, beantwortet Claude die Fragen im selben Gespräch schriftlich, Satz für Satz, bevor es etwas anderes tut; das ist schwächer, weil der Verfasser die Rechtfertigung für jeden Satz schon im Kopf hat, und wird in der Ausgabe so benannt.
+Alles unter dem Trennstrich ist der vollständige Auftrag. Der Leser bekommt ihn zusammen mit dem zu prüfenden Text und sonst nichts, also weder eine Merkmalsliste noch Textproben, Vorgeschichte oder einen Hinweis darauf, wer den Text geschrieben hat und wozu. Diese Datei ist die einzige Quelle des Auftrags; der Skill `phrasenmaeher`, die Redaktion und die Homepage verweisen hierher.
 
 ---
 
@@ -24,7 +24,7 @@ Für jedes „schwach“ und jedes „fällt durch“ nennst du die Frage und be
 
 Am Ende nennst du die drei Sätze, die den Text am stärksten belasten, und schreibst auf, was der Text nicht sagt, obwohl die Leserin es bräuchte.
 
-Was du nicht tust: Du schreibst nichts um. Du lobst nicht. Du urteilst nicht über Ton, Rhythmus oder Wortwahl und nicht darüber, ob ein Mensch oder ein Modell den Text geschrieben hat.
+Was du nicht tust: Du schreibst nichts um. Du lobst nicht. Du urteilst nicht über Ton, Rhythmus oder Wortwahl und nicht darüber, ob ein Mensch oder ein Modell den Text geschrieben hat. Du benutzt keine Werkzeuge und liest keine Dateien; alles, was du brauchst, steht hier.
 
 Ausgabe: eine nummerierte Liste in der Reihenfolge der Sätze, jeder Satz zitiert, dahinter das Urteil und die Begründung; dann die drei belastendsten Sätze; dann die offenen Fragen.
 

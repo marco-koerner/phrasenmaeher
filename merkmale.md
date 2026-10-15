@@ -4,7 +4,7 @@ Stand: 15.10.2026, erste Fassung. Grundlage: eigene Beobachtung, „Inside HKomm
 
 Diese Datei sammelt Wörter, Wendungen und Formen, die Leserinnen und Leser nach meiner Beobachtung an KI-Text oder an Phrasendrescherei denken lassen; einige davon nennt Heeren in der Podcastfolge. Ob ein Mensch oder ein Modell geschrieben hat, unterscheidet die Liste nicht, und kein Merkmal beweist etwas, der Gedankenstrich ist korrekte deutsche Typografie. Die Liste zeigt, was den **Verdacht** auslöst, damit man die Stelle findet und bewusst entscheidet, ob sie stehen bleibt.
 
-Die Liste hat eine Grenze, die sich am 15.10.2026 am Text der Demonstrationsseite gezeigt hat: Der Text kam ohne eine einzige Fundstelle durch das Skript und war trotzdem glatt (eine Definition ohne Quelle, eine Aufzählung statt eines Satzes, ein Selbstbezug ohne Nutzen für die Leserin). Wer die Liste kennt, schreibt um sie herum; das gilt für ein Sprachmodell wie für einen Menschen. Deshalb prüft das Skript seither auch Satzformen (Abschnitt „Was das Skript zählt, ohne Liste“), und deshalb gehört zu jeder Prüfung ein Leser, der den Text nicht geschrieben hat (`leser.md` im Skill).
+Die Liste hat eine Grenze, die sich am 15.10.2026 am Text der Demonstrationsseite gezeigt hat: Der Text kam ohne eine einzige Fundstelle durch das Skript und war trotzdem glatt (eine Definition ohne Quelle, eine Aufzählung statt eines Satzes, ein Selbstbezug ohne Nutzen für die Leserin). Wer die Liste kennt, schreibt um sie herum; das gilt für ein Sprachmodell wie für einen Menschen. Deshalb prüft das Skript seither auch Satzformen (Abschnitt „Was das Skript zählt, ohne Liste“), und deshalb gehört zu jeder Prüfung ein Leser, der den Text nicht geschrieben hat (Skill `leser`, Auftrag in `skills/leser/auftrag.md`).
 
 Das Skript `phrasenmaeher.py` liest diese Datei: Einträge unter „Floskeln“ und „Wendungen“ sucht es wörtlich (Groß- und Kleinschreibung egal, nur ganze Wörter), Einträge unter „Muster“ als regulären Ausdruck in Backticks. Alles nach „ – “ hinter einem Eintrag ist Erläuterung und wird nicht gesucht.
 
@@ -131,7 +131,7 @@ Satzformen (Kategorie „Satzbau“, seit 15.10.2026, Anlass: der Seitentext, de
 
 ## Was nur das Lesen findet
 
-Das Skript zählt Oberfläche und Satzformen. Es findet keine Aussagen, also nicht, ob ein Satz etwas behauptet, das niemand belegt, oder etwas sagt, das niemanden interessiert. Das findet nur, wer liest, und am besten jemand, der den Text nicht geschrieben hat: Wer den Satz geschrieben hat, hat auch die Rechtfertigung dafür im Kopf. Deshalb stellt der Leser (`leser.md` im Skill) jedem Satz fünf Fragen:
+Das Skript zählt Oberfläche und Satzformen. Es findet keine Aussagen, also nicht, ob ein Satz etwas behauptet, das niemand belegt, oder etwas sagt, das niemanden interessiert. Das findet nur, wer liest, und am besten jemand, der den Text nicht geschrieben hat: Wer den Satz geschrieben hat, hat auch die Rechtfertigung dafür im Kopf. Deshalb stellt der Leser (Skill `leser`, Auftrag in `skills/leser/auftrag.md`) jedem Satz fünf Fragen:
 
 1. Ist das ein Satz mit einer Aussage, oder eine Reihung, ein Fragment, ein Schlagwort?
 2. Woher stammt die Behauptung? Beleg, Beispiel, Erlebnis, Quelle im Text, oder nirgends nachlesbar?
